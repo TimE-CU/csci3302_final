@@ -9,6 +9,8 @@ from std_msgs.msg import String
 
 # Globals
 TWITCH_PORT = 6667
+TWITCH_SERVER = 'irc.chat.twitch.tv'
+
 
 class ChatReader(irc.bot.SingleServerIRCBot):
     def __init__(self, username, token, channel):
@@ -20,10 +22,16 @@ class ChatReader(irc.bot.SingleServerIRCBot):
         self.token = token
         self.channel = '#' + channel
 
-        server = 'irc.chat.twitch.tv'
-        port = 6667
+        port = TWITCH_PORT
+        server = TWITCH_SERVER
+
         rospy.loginfo("Connecting to {ser} on port {port}...".format(ser=server, port=port))
-        irc.bot.SingleServerIRCBot.__init__(self, [(server, port, 'oauth:'+token)], username, username)
+        irc.bot.SingleServerIRCBot.__init__(
+            self, 
+            [(server, port, 'oauth:'+token)], 
+            username, 
+            username
+        )
 
     def on_welcome(self, channel, event):
         rospy.loginfo("Joining %s" % self.channel)
@@ -35,7 +43,6 @@ class ChatReader(irc.bot.SingleServerIRCBot):
 
     def on_pubmsg(self, channel, event):
     	# Useful Keys:
-    	# 	- 
     	args = {a['key'] : a['value'] for a in event.tags}
     	args['message'] = event.arguments[0]
     	output = str(args['message'])
@@ -43,9 +50,10 @@ class ChatReader(irc.bot.SingleServerIRCBot):
         self.pub.publish(output)
 
 if __name__ == '__main__':
+    
 
     try:
-        bot = ChatReader('twitchyrobots', '0dhx2iyi6lwtgngshdtesubcriki23', 'twitchyrobots')
+        bot = ChatReader('csci3302', 'tztrsyc4ceu10bktzx31jykgrhorhj', 'csci3302')
         bot.start()
     except rospy.ROSInterruptException:
         pass
