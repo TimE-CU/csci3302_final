@@ -1,5 +1,7 @@
 #!/usr/bin/env python2
 
+import time
+
 import rospy
 import json
 import RPi.GPIO as GPIO
@@ -33,6 +35,7 @@ class Bot:
         self.motor_B_PWM.start(0)
 
         GPIO.output(_PINS['STDBY'], GPIO.HIGH)
+        print("Started motor driver")
 
     def parse_msg(self, msg):
         msg = msg.data.split()
